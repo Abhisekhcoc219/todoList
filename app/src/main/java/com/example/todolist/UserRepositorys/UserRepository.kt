@@ -1,6 +1,8 @@
-package com.example.todolist.dataUtil
+package com.example.todolist.UserRepositorys
 
 import androidx.lifecycle.LiveData
+import com.example.todolist.dbUtil.NotesDao
+import com.example.todolist.model.NoteDataModel
 
 class UserRepository(private val notesDao: NotesDao) {
     val allNotes: LiveData<List<NoteDataModel>> =notesDao.getAllNotes()
@@ -13,7 +15,10 @@ class UserRepository(private val notesDao: NotesDao) {
     suspend fun delete(noteDataModel: NoteDataModel){
         notesDao.updateNote(noteDataModel)
     }
-    suspend fun searchNotes(searchForNotes:String?):LiveData<List<NoteDataModel>>{
+    suspend fun searchNotes(searchForNotes:String?):List<NoteDataModel>{
         return searchForNotes?.let { notesDao.searchNotes(it) }!!
+    }
+    suspend fun getId(text:String?): Int? {
+    return text?.let { notesDao.getIdByText(it) }
     }
 }

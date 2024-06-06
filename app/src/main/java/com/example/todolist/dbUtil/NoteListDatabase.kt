@@ -1,9 +1,11 @@
-package com.example.todolist.dataUtil
+package com.example.todolist.dbUtil
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.todolist.model.NoteDataModel
+
 @Database(entities = [NoteDataModel::class], version = 1, exportSchema = false)
 abstract class NoteListDatabase:RoomDatabase() {
     abstract fun noteDao():NotesDao

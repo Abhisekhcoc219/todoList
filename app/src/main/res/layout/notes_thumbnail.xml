@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:id="@+id/root"
     android:layout_height="wrap_content"
-    android:background="@drawable/radius_custom_recycler"
+    android:background="@drawable/note_list_radius"
+    android:id="@+id/noteRoot"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 <androidx.appcompat.widget.Toolbar
     android:id="@+id/thumbnail_toolbar"
     android:layout_width="match_parent"
-    android:layout_height="20dp"
+    android:layout_height="wrap_content"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
@@ -33,6 +33,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:text="fjkdkfdj"
+        android:id="@+id/secondTitle"
         android:layout_marginTop="3dp"
         android:gravity="start|center"
         android:textSize="20sp"

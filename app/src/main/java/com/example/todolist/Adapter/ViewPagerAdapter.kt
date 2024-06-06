@@ -1,11 +1,15 @@
-package com.example.todolist
+package com.example.todolist.Adapter
 
+import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.example.todolist.view.fragment.AllListFragment
+import com.example.todolist.view.fragment.PinnedFragment
 
-class ViewPagerAdapter(fragmentActivity:FragmentActivity,val list:List<Fragment>):FragmentStateAdapter(fragmentActivity){
-    override fun getItemCount(): Int =list.size
+class ViewPagerAdapter(val context: Context, fragmentActivity: FragmentActivity):FragmentStateAdapter(fragmentActivity){
+    override fun getItemCount(): Int =2
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> AllListFragment()

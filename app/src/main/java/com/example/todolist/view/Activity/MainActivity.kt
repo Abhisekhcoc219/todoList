@@ -1,4 +1,4 @@
-package com.example.todolist
+package com.example.todolist.view.Activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.todolist.R
 import com.example.todolist.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,13 +30,13 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-       animation=AnimationUtils.loadAnimation(this,R.anim.animation)
+       animation=AnimationUtils.loadAnimation(this, R.anim.animation)
         binding.toDo.startAnimation(animation)
         val delays=CoroutineScope(Dispatchers.IO).launch {
             delay(3000)
         }
         delays.invokeOnCompletion {
-            startActivity(Intent(this,HomePage::class.java))
+            startActivity(Intent(this, HomePageActivity::class.java))
             finish()
         }
     }

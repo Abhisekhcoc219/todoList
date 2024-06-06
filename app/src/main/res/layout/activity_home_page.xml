@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomePage">
+    tools:context=".view.Activity.HomePageActivity">
 
   <androidx.appcompat.widget.Toolbar
       app:layout_constraintStart_toStartOf="parent"

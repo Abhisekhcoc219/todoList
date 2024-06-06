@@ -38,6 +38,9 @@ android {
     viewBinding {
         enable =true
     }
+   dataBinding {
+       enable =true
+   }
 }
 dependencies {
     val room_version = "2.6.1"
@@ -53,7 +56,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    //noinspection UseTomlInstead
     implementation ("androidx.viewpager2:viewpager2:1.1.0")
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    //noinspection UseTomlInstead
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.8.1")
+    //noinspection UseTomlInstead,GradleDependency
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
 }

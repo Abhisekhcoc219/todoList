@@ -13,13 +13,13 @@
         android:theme="@style/Theme.ToDoList"
         tools:targetApi="31">
         <activity
-            android:name=".NotesActivity"
+            android:name=".view.Activity.NotesActivity"
             android:exported="false" />
         <activity
-            android:name=".HomePage"
+            android:name=".view.Activity.HomePageActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".view.Activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
