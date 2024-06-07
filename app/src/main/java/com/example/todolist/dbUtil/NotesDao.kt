@@ -21,6 +21,7 @@ interface NotesDao {
     suspend fun insertNote(note: NoteDataModel)
     @Delete
     suspend fun deleteNote(note: NoteDataModel)
+
     @Update
     suspend fun updateNote(note: NoteDataModel)
 }

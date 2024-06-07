@@ -9,7 +9,7 @@ import com.example.todolist.model.NoteDataModel
 @Database(entities = [NoteDataModel::class], version = 1, exportSchema = false)
 abstract class NoteListDatabase:RoomDatabase() {
     abstract fun noteDao():NotesDao
-    companion object{
+    companion   object{
         @Volatile
         private var INSTANCE:NoteListDatabase? = null
         fun getDatabase(context: Context):NoteListDatabase{
@@ -18,7 +18,7 @@ abstract class NoteListDatabase:RoomDatabase() {
                     context.applicationContext,
                     NoteListDatabase::class.java,
                     "note_database"
-                ).build()
+                ).setJournalMode(RoomDatabase.JournalMode.TRUNCATE).build()
                 INSTANCE = instance
                 instance
             }

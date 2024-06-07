@@ -44,32 +44,31 @@ class NotesActivity : AppCompatActivity() {
         }
         setSupportActionBar(binding.notesToolBar)
         mainViewModel.isFirst=intent.getBooleanExtra("overWrite",false)
+        if(mainViewModel.isFirst){
+            val positions:Int=intent.getIntExtra("pos",0)
+            mainViewModel.allNotes().observe(this, Observer {
+                binding.mainTitle.text= it[positions].mainHeading?.toEditable()
+                binding.titleNotes.text=it[positions].subHeading?.toEditable()
+                Log.d("TAGS","YES ${it[positions].id} "+positions)
+            })
+        }
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.backButton.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                mainViewModel.isBackPress=true
-                StoreData()
-                delay(700)
-            }
             startActivity(Intent(this@NotesActivity,HomePageActivity::class.java))
             finish()
         }
 
         binding.shows.setOnClickListener {
             mainViewModel.allNotes().observe(this, Observer {
-                Log.e("TAGS",it.toString())
+                Log.e("tags",it.toString())
             })
+          mainViewModel.update(NoteDataModel("hjdskhdjksh","hjsdkhsdkj"))
         }
-
     }
 
-    override fun onStop() {
-        super.onStop()
-        CoroutineScope(Dispatchers.IO).launch {
-            if(!mainViewModel.isBackPress){
-            StoreData()}
-            delay(700)
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        StoreData()
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
@@ -98,17 +97,13 @@ class NotesActivity : AppCompatActivity() {
             }
         }
         else{
-            val titleMain:String?=intent.getStringExtra("firstText")
-            val titleSecond:String?=intent.getStringExtra("secondText")
-            binding.mainTitle.text= titleMain?.toEditable()
-            binding.titleNotes.text=titleSecond?.toEditable()
-//            Toast.makeText(this, "$titleMain", Toast.LENGTH_SHORT).show()
-            val heading:String?=binding.mainTitle.toString()
-            val secondHeading:String?=binding.titleNotes.toString()
-            if(heading?.isNotEmpty() == true || secondHeading?.isNotEmpty() == true){
-                mainViewModel.update(NoteDataModel(heading,secondHeading))
-            }
+//            Log.e("TAGS","YEESSS"+binding.mainTitle.text.toString())
+            val firstText:String? = binding.mainTitle.text.toString()
+            val secondText:String? = binding.titleNotes.text.toString()
+            val pos=intent.getIntExtra("pos",0)
+            mainViewModel.update(NoteDataModel(pos+1,firstText, secondText))
         }
+
     }
     fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
 }

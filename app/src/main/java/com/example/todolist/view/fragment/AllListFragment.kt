@@ -66,10 +66,8 @@ class AllListFragment: Fragment(),OnItemClickListener {
         val listData=viewModel.allNotes().value?.get(position)
         if (listData != null) {
             val intent:Intent=Intent(requireContext(),NotesActivity::class.java)
-            intent.putExtra("firstText",listData.mainHeading)
-            intent.putExtra("secondText",listData.subHeading)
+            intent.putExtra("pos",position)
             intent.putExtra("overWrite",true)
-            Toast.makeText(requireContext(), "${listData.mainHeading}", Toast.LENGTH_SHORT).show()
             startActivity(intent)
         }
     }
