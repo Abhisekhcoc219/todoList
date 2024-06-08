@@ -38,14 +38,11 @@ class AllListFragment: Fragment(),OnItemClickListener {
         val viewModelProvider = ViewModelProvider(viewModelStore, factory)
         viewModel= viewModelProvider[MainViewModel::class.java]
         _binding.recyclerView.layoutManager=LinearLayoutManager(requireContext())
-        _binding.show.setOnClickListener {
-            viewModel.allNotes().observe(viewLifecycleOwner, Observer {
-//                Toast.makeText(context, "dsjkhjdks", Toast.LENGTH_SHORT).show()
-                val customAdapter:notesListCustomAdapter=notesListCustomAdapter(it)
-                customAdapter.setOnItemListener(this)
-               _binding.recyclerView.adapter=customAdapter
-            })
-        }
+        viewModel.allNotes().observe(viewLifecycleOwner, Observer {
+            val customAdapter:notesListCustomAdapter=notesListCustomAdapter(it)
+            customAdapter.setOnItemListener(this)
+            _binding.recyclerView.adapter=customAdapter
+        })
         _binding.addButton.setOnClickListener {
             startActivity(Intent(getActivity(), NotesActivity::class.java))
         }

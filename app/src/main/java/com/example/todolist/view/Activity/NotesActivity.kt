@@ -58,12 +58,6 @@ class NotesActivity : AppCompatActivity() {
             finish()
         }
 
-        binding.shows.setOnClickListener {
-            mainViewModel.allNotes().observe(this, Observer {
-                Log.e("tags",it.toString())
-            })
-          mainViewModel.update(NoteDataModel("hjdskhdjksh","hjsdkhsdkj"))
-        }
     }
 
     override fun onDestroy() {
