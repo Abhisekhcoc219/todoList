@@ -13,7 +13,7 @@ class UserRepository(private val notesDao: NotesDao) {
         notesDao.updateNote(noteDataModel)
     }
     suspend fun delete(noteDataModel: NoteDataModel){
-        notesDao.updateNote(noteDataModel)
+        notesDao.deleteNote(noteDataModel)
     }
     suspend fun searchNotes(searchForNotes:String?):List<NoteDataModel>{
         return searchForNotes?.let { notesDao.searchNotes(it) }!!

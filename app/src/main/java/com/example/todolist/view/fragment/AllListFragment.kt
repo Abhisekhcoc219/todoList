@@ -3,6 +3,7 @@ package com.example.todolist.view.fragment
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -64,8 +65,19 @@ class AllListFragment: Fragment(),OnItemClickListener {
         if (listData != null) {
             val intent:Intent=Intent(requireContext(),NotesActivity::class.java)
             intent.putExtra("pos",position)
+            intent.putExtra("listId",listData.id)
             intent.putExtra("overWrite",true)
             startActivity(intent)
         }
+    }
+
+    override fun onItemDelete(position: Int) {
+        Log.e("TAGS","entery delete")
+     val listNotes= viewModel.allNotes().value?.get(position)
+      viewModel.delete(NoteDataModel(listNotes!!.id,listNotes!!.mainHeading, listNotes!!.subHeading))
+        Log.e("TAGS","${viewModel.allNotes().value!!.get(position).id} ${position+1} " +
+                "${viewModel.allNotes().value!!.get(position).mainHeading} ${listNotes.mainHeading}" +
+                " ")
+        Log.e("TAGS","complete delete")
     }
 }

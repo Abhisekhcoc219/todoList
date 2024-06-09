@@ -5,4 +5,5 @@
     <string name="pinned">Pinned</string>
     <string name="enter_your_today_title">Enter your today title</string>
     <string name="write_your_task">Write your task</string>
+    <string name="delete">Delete</string>
 </resources>

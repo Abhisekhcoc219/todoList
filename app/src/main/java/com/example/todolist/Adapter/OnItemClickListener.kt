@@ -5,4 +5,5 @@ import com.example.todolist.model.NoteDataModel
 
 interface OnItemClickListener {
     fun onItemClick(position: Int)
+    fun onItemDelete(position:Int)
 }

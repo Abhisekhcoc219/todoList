@@ -28,4 +28,7 @@ class MainViewModel(private val userRepository: UserRepository): ViewModel(){
             Log.e("TAGS",""+e.localizedMessage)
         }
     }
+    fun delete(noteDataModel: NoteDataModel)=CoroutineScope(Dispatchers.IO).launch {
+        userRepository.delete(noteDataModel)
+    }
 }

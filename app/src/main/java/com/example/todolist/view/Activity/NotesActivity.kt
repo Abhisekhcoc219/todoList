@@ -94,8 +94,8 @@ class NotesActivity : AppCompatActivity() {
 //            Log.e("TAGS","YEESSS"+binding.mainTitle.text.toString())
             val firstText:String? = binding.mainTitle.text.toString()
             val secondText:String? = binding.titleNotes.text.toString()
-            val pos=intent.getIntExtra("pos",0)
-            mainViewModel.update(NoteDataModel(pos+1,firstText, secondText))
+            val pos=intent.getIntExtra("listId",0)
+            mainViewModel.update(NoteDataModel(pos,firstText, secondText))
         }
 
     }
