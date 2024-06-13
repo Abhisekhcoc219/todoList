@@ -47,6 +47,9 @@ class AllListFragment: Fragment(),OnItemClickListener {
         _binding.addButton.setOnClickListener {
             startActivity(Intent(getActivity(), NotesActivity::class.java))
         }
+        viewModel.allNotes().observe(viewLifecycleOwner, Observer {
+            Log.e("TAGS",it.toString())
+        })
         return _binding.root
     }
 
@@ -65,6 +68,7 @@ class AllListFragment: Fragment(),OnItemClickListener {
         if (listData != null) {
             val intent:Intent=Intent(requireContext(),NotesActivity::class.java)
             intent.putExtra("pos",position)
+            intent.putExtra("first",true)
             intent.putExtra("listId",listData.id)
             intent.putExtra("overWrite",true)
             startActivity(intent)
@@ -74,7 +78,7 @@ class AllListFragment: Fragment(),OnItemClickListener {
     override fun onItemDelete(position: Int) {
         Log.e("TAGS","entery delete")
      val listNotes= viewModel.allNotes().value?.get(position)
-      viewModel.delete(NoteDataModel(listNotes!!.id,listNotes!!.mainHeading, listNotes!!.subHeading))
+      viewModel.delete(NoteDataModel(listNotes!!.id,listNotes!!.mainHeading, listNotes!!.subHeading,listNotes!!.isPinned))
         Log.e("TAGS","${viewModel.allNotes().value!!.get(position).id} ${position+1} " +
                 "${viewModel.allNotes().value!!.get(position).mainHeading} ${listNotes.mainHeading}" +
                 " ")

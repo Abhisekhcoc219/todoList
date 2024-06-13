@@ -6,6 +6,7 @@ import com.example.todolist.model.NoteDataModel
 
 class UserRepository(private val notesDao: NotesDao) {
     val allNotes: LiveData<List<NoteDataModel>> =notesDao.getAllNotes()
+    val getPinnedNotes:LiveData<List<NoteDataModel>> = notesDao.getPinnedNotes()
     suspend fun insert(noteDataModel: NoteDataModel){
         notesDao.insertNote(noteDataModel)
     }
@@ -17,8 +18,5 @@ class UserRepository(private val notesDao: NotesDao) {
     }
     suspend fun searchNotes(searchForNotes:String?):List<NoteDataModel>{
         return searchForNotes?.let { notesDao.searchNotes(it) }!!
-    }
-    suspend fun getId(text:String?): Int? {
-    return text?.let { notesDao.getIdByText(it) }
     }
 }

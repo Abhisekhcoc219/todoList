@@ -8,8 +8,9 @@ import androidx.room.PrimaryKey
 data class NoteDataModel(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "Headings")val mainHeading:String?,
-    @ColumnInfo(name = "SubHeadings")val subHeading:String?
+    @ColumnInfo(name = "SubHeadings")val subHeading:String?,
+    @ColumnInfo(name = "pinned") val isPinned:Boolean
 )
 {
-    constructor(title:String?,noteTitle:String?) :this(0,title,noteTitle)
+    constructor(title:String?,noteTitle:String?,isPinned: Boolean) :this(0,title,noteTitle,isPinned)
 }

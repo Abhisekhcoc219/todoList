@@ -12,6 +12,9 @@ import com.example.todolist.model.NoteDataModel
 interface NotesDao {
     @Query("SELECT * FROM notes")
     fun getAllNotes(): LiveData<List<NoteDataModel>>
+    @Query("SELECT * FROM notes WHERE pinned=1")
+    fun getPinnedNotes():LiveData<List<NoteDataModel>>
+
     @Query("SELECT * FROM notes WHERE Headings LIKE '%' || :searchQuery || '%'")
     suspend fun searchNotes(searchQuery: String?):List<NoteDataModel>
 

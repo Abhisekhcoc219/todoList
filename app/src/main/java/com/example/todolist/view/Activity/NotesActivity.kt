@@ -46,11 +46,20 @@ class NotesActivity : AppCompatActivity() {
         mainViewModel.isFirst=intent.getBooleanExtra("overWrite",false)
         if(mainViewModel.isFirst){
             val positions:Int=intent.getIntExtra("pos",0)
+            if(intent.getBooleanExtra("first",false)){
             mainViewModel.allNotes().observe(this, Observer {
                 binding.mainTitle.text= it[positions].mainHeading?.toEditable()
                 binding.titleNotes.text=it[positions].subHeading?.toEditable()
                 Log.d("TAGS","YES ${it[positions].id} "+positions)
-            })
+                isCheckPinnedForFirstFragment()
+            })}
+            else{
+                mainViewModel.getPinNotes().observe(this, Observer {
+                    binding.mainTitle.text= it[positions].mainHeading?.toEditable()
+                    binding.titleNotes.text=it[positions].subHeading?.toEditable()
+                    isCheckPinnedForSecondFragment()
+                })
+            }
         }
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.backButton.setOnClickListener {
@@ -58,6 +67,47 @@ class NotesActivity : AppCompatActivity() {
             finish()
         }
 
+        binding.pinButton.setOnClickListener {
+            addToPinned()
+        }
+    }
+    fun isCheckPinnedForFirstFragment(){
+        val pos=intent.getIntExtra("pos",0)
+        val list=mainViewModel.allNotes().value?.get(pos)
+//        Log.e("TAGS",list.toString())
+        if(list?.isPinned!!){
+            binding.pinButton.text=getString(R.string.unpinned)
+        }
+        else{
+            binding.pinButton.text=getString(R.string.pinned)
+        }
+    }
+
+
+    fun isCheckPinnedForSecondFragment(){
+        val pos=intent.getIntExtra("pos",0)
+        val list=mainViewModel.getPinNotes().value?.get(pos)
+//        Log.e("TAGS",list.toString())
+        if(list?.isPinned!!){
+            binding.pinButton.text=getString(R.string.unpinned)
+        }
+        else{
+            binding.pinButton.text=getString(R.string.pinned)
+        }
+    }
+    fun addToPinned(){
+        val pos=intent.getIntExtra("pos",0)
+        val list=mainViewModel.allNotes().value?.get(pos)
+        Log.e("TAGS",list.toString())
+        if(getString(R.string.pinned)===binding.pinButton.text){
+            binding.pinButton.text=getString(R.string.unpinned)
+            mainViewModel.isPinned=true
+        }
+        else if(getString(R.string.unpinned)===binding.pinButton.text)
+        {
+            binding.pinButton.text=getString(R.string.pinned)
+            mainViewModel.isPinned=false
+        }
     }
 
     override fun onDestroy() {
@@ -84,7 +134,7 @@ class NotesActivity : AppCompatActivity() {
         val NoteTitle=binding.titleNotes.getText().toString()
         if(!mainViewModel.isFirst){
             if(Title.isNotEmpty() || NoteTitle.isNotEmpty()){
-                mainViewModel.insert(NoteDataModel(Title,NoteTitle))
+                mainViewModel.insert(NoteDataModel(Title,NoteTitle,mainViewModel.isPinned))
             }
             else{
 //                Toast.makeText(this, "not created", Toast.LENGTH_SHORT).show()
@@ -95,7 +145,10 @@ class NotesActivity : AppCompatActivity() {
             val firstText:String? = binding.mainTitle.text.toString()
             val secondText:String? = binding.titleNotes.text.toString()
             val pos=intent.getIntExtra("listId",0)
-            mainViewModel.update(NoteDataModel(pos,firstText, secondText))
+            if(!intent.getBooleanExtra("first",true)){
+                mainViewModel.isPinned=true
+            }
+            mainViewModel.update(NoteDataModel(pos,firstText, secondText,mainViewModel.isPinned))
         }
 
     }

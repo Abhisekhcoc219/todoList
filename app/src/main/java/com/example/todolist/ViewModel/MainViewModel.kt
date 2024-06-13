@@ -9,12 +9,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val userRepository: UserRepository): ViewModel(){
-    var isBackPress:Boolean=false
     var isFirst:Boolean=false
-    var isFirstTimeInit:Boolean=false
-
+    var isPinned:Boolean=false
   fun allNotes() =userRepository.allNotes
-    suspend fun getId(text:String?): Int? =userRepository.getId(text)
+    fun getPinNotes()=userRepository.getPinnedNotes
     suspend fun getNotes(query:String?)=userRepository.searchNotes(query)
     fun insert(noteDataModel: NoteDataModel)= CoroutineScope(Dispatchers.IO
     ).launch {
