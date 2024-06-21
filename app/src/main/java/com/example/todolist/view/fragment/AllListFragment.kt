@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todolist.Adapter.OnItemClickListener
+import com.example.todolist.Adapter.SearchFragment
 import com.example.todolist.Adapter.notesListCustomAdapter
 import com.example.todolist.UserRepositorys.UserRepository
 import com.example.todolist.ViewModel.MainModelViewFactory
@@ -22,7 +23,7 @@ import com.example.todolist.databinding.FragmentAllListBinding
 import com.example.todolist.dbUtil.NoteListDatabase
 import com.example.todolist.model.NoteDataModel
 import com.example.todolist.view.Activity.NotesActivity
-class AllListFragment: Fragment(),OnItemClickListener {
+class AllListFragment: Fragment(),OnItemClickListener,SearchFragment {
     private lateinit var _binding: FragmentAllListBinding
     private lateinit var factory:MainModelViewFactory
     private lateinit var viewModel:MainViewModel
@@ -42,6 +43,7 @@ class AllListFragment: Fragment(),OnItemClickListener {
         viewModel.allNotes().observe(viewLifecycleOwner, Observer {
             val customAdapter:notesListCustomAdapter=notesListCustomAdapter(it)
             customAdapter.setOnItemListener(this)
+            _binding.recyclerView.adapter
             _binding.recyclerView.adapter=customAdapter
         })
         _binding.addButton.setOnClickListener {
@@ -79,9 +81,17 @@ class AllListFragment: Fragment(),OnItemClickListener {
         Log.e("TAGS","entery delete")
      val listNotes= viewModel.allNotes().value?.get(position)
       viewModel.delete(NoteDataModel(listNotes!!.id,listNotes!!.mainHeading, listNotes!!.subHeading,listNotes!!.isPinned))
-        Log.e("TAGS","${viewModel.allNotes().value!!.get(position).id} ${position+1} " +
-                "${viewModel.allNotes().value!!.get(position).mainHeading} ${listNotes.mainHeading}" +
-                " ")
-        Log.e("TAGS","complete delete")
+    }
+
+    override fun searchList(query: String) {
+     Log.e("TAGS","es $query")
+        viewModel.searchResults.observe(viewLifecycleOwner, Observer {
+            val customAdapter:notesListCustomAdapter=notesListCustomAdapter(it)
+            customAdapter.setOnItemListener(this)
+            _binding.recyclerView.adapter
+            _binding.recyclerView.adapter=customAdapter
+            Log.e("TAGS",it.toString())
+        })
+        viewModel.searchNotes(query)
     }
 }

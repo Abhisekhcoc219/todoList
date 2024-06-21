@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.todolist.model.NoteDataModel
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NotesDao {
@@ -15,8 +16,8 @@ interface NotesDao {
     @Query("SELECT * FROM notes WHERE pinned=1")
     fun getPinnedNotes():LiveData<List<NoteDataModel>>
 
-    @Query("SELECT * FROM notes WHERE Headings LIKE '%' || :searchQuery || '%'")
-    suspend fun searchNotes(searchQuery: String?):List<NoteDataModel>
+    @Query("SELECT * FROM notes WHERE Headings LIKE '%' || :searchQuery || '%' OR  SubHeadings LIKE '%' || :searchQuery|| '%' ")
+    fun searchNotes(searchQuery: String?): Flow<List<NoteDataModel>>
 
     @Query("SELECT id FROM notes WHERE Headings = :text")
     suspend fun getIdByText(text: String?): Int?

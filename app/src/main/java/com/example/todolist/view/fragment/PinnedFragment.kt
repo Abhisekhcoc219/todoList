@@ -3,6 +3,7 @@ package com.example.todolist.view.fragment
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todolist.Adapter.OnItemClickListener
+import com.example.todolist.Adapter.SearchFragment
 import com.example.todolist.Adapter.notesListCustomAdapter
 import com.example.todolist.UserRepositorys.UserRepository
 import com.example.todolist.ViewModel.MainModelViewFactory
@@ -27,7 +29,7 @@ import com.example.todolist.view.Activity.NotesActivity
  * Use the [PinnedFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class PinnedFragment: Fragment(),OnItemClickListener {
+class PinnedFragment: Fragment(),OnItemClickListener,SearchFragment {
     private lateinit var binding: FragmentPinnedBinding
     // TODO: Rename and change types of parameters
     private lateinit var factory: MainModelViewFactory
@@ -52,6 +54,7 @@ class PinnedFragment: Fragment(),OnItemClickListener {
             NoteListCustomAdapter.setOnItemListener(this)
             binding.pinnedRecycler.adapter=NoteListCustomAdapter
         })
+        viewModel.WhichFragment=true
         binding.addButton.setOnClickListener {
             startActivity(Intent(getActivity(), NotesActivity::class.java))
         }
@@ -73,5 +76,16 @@ class PinnedFragment: Fragment(),OnItemClickListener {
     override fun onItemDelete(position: Int) {
         val listNotes= viewModel.getPinNotes().value?.get(position)
         viewModel.delete(NoteDataModel(listNotes!!.id,listNotes!!.mainHeading, listNotes!!.subHeading,listNotes!!.isPinned))
+    }
+
+    override fun searchList(query: String) {
+        viewModel.searchResults.observe(viewLifecycleOwner, Observer {
+            val NoteListCustomAdapter=notesListCustomAdapter(it)
+            NoteListCustomAdapter.setOnItemListener(this)
+            binding.pinnedRecycler.adapter=NoteListCustomAdapter
+            Log.e("TAGS",it.toString())
+        })
+        viewModel.searchNotes(query)
+        Log.e("TAGS","pinned $query")
     }
 }

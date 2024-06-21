@@ -48,22 +48,23 @@ class NotesActivity : AppCompatActivity() {
             val positions:Int=intent.getIntExtra("pos",0)
             if(intent.getBooleanExtra("first",false)){
             mainViewModel.allNotes().observe(this, Observer {
+                if(it.isNotEmpty()){
                 binding.mainTitle.text= it[positions].mainHeading?.toEditable()
                 binding.titleNotes.text=it[positions].subHeading?.toEditable()
                 Log.d("TAGS","YES ${it[positions].id} "+positions)
-                isCheckPinnedForFirstFragment()
+                isCheckPinnedForFirstFragment()}
             })}
             else{
                 mainViewModel.getPinNotes().observe(this, Observer {
+                    if(it.isNotEmpty()){
                     binding.mainTitle.text= it[positions].mainHeading?.toEditable()
                     binding.titleNotes.text=it[positions].subHeading?.toEditable()
-                    isCheckPinnedForSecondFragment()
+                    isCheckPinnedForSecondFragment()}
                 })
             }
         }
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.backButton.setOnClickListener {
-            startActivity(Intent(this@NotesActivity,HomePageActivity::class.java))
             finish()
         }
 
@@ -123,6 +124,9 @@ class NotesActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
             R.id.delete -> {
+                val id=intent.getIntExtra("listId",0)
+                mainViewModel.delete(NoteDataModel(id,binding.mainTitle.text.toString(),binding.titleNotes.text.toString(),mainViewModel.isPinned))
+                finish()
                 true
             }
             else->super.onOptionsItemSelected(item)
@@ -141,11 +145,16 @@ class NotesActivity : AppCompatActivity() {
             }
         }
         else{
-//            Log.e("TAGS","YEESSS"+binding.mainTitle.text.toString())
             val firstText:String? = binding.mainTitle.text.toString()
             val secondText:String? = binding.titleNotes.text.toString()
             val pos=intent.getIntExtra("listId",0)
             if(!intent.getBooleanExtra("first",true)){
+                mainViewModel.isPinned=true
+            }
+            if(getString(R.string.pinned)===binding.pinButton.text){
+                mainViewModel.isPinned=false
+            }
+            else if(getString(R.string.unpinned)===binding.pinButton.text){
                 mainViewModel.isPinned=true
             }
             mainViewModel.update(NoteDataModel(pos,firstText, secondText,mainViewModel.isPinned))
