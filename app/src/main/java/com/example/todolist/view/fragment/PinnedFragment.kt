@@ -50,7 +50,7 @@ class PinnedFragment: Fragment(),OnItemClickListener,SearchFragment {
         viewModel=ViewModelProvider(viewModelStore,factory).get(MainViewModel::class.java)
         binding.pinnedRecycler.layoutManager=LinearLayoutManager(requireContext())
         viewModel.getPinNotes().observe(viewLifecycleOwner, Observer {
-            val NoteListCustomAdapter=notesListCustomAdapter(it)
+            val NoteListCustomAdapter=notesListCustomAdapter(requireContext(),it)
             NoteListCustomAdapter.setOnItemListener(this)
             binding.pinnedRecycler.adapter=NoteListCustomAdapter
         })
@@ -80,12 +80,15 @@ class PinnedFragment: Fragment(),OnItemClickListener,SearchFragment {
 
     override fun searchList(query: String) {
         viewModel.searchResults.observe(viewLifecycleOwner, Observer {
-            val NoteListCustomAdapter=notesListCustomAdapter(it)
+            val NoteListCustomAdapter=notesListCustomAdapter(requireContext(),it)
             NoteListCustomAdapter.setOnItemListener(this)
             binding.pinnedRecycler.adapter=NoteListCustomAdapter
             Log.e("TAGS",it.toString())
         })
         viewModel.searchNotes(query)
         Log.e("TAGS","pinned $query")
+    }
+
+    override fun isCompleteSearch(isSearching: Boolean) {
     }
 }

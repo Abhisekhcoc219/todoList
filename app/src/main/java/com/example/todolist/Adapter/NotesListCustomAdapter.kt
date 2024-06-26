@@ -2,18 +2,29 @@ package com.example.todolist.Adapter
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.R
 import com.example.todolist.databinding.NotesThumbnailBinding
 import com.example.todolist.model.NoteDataModel
-import com.example.todolist.view.Activity.NotesActivity
+import kotlin.random.Random
 
-class notesListCustomAdapter(noteList:List<NoteDataModel>): RecyclerView.Adapter<notesListCustomAdapter.ViewHolder>() {
+class notesListCustomAdapter(context:Context,noteList:List<NoteDataModel>): RecyclerView.Adapter<notesListCustomAdapter.ViewHolder>() {
     private val noteLists: List<NoteDataModel> = noteList
     private var listener:OnItemClickListener?=null
+    private val fContext=context
+    private val colors = listOf(
+        R.color.lightYellow,
+        R.color.lightRed,
+        R.color.lightBlue,
+        R.color.lightGreen,
+        R.color.lightPurple,
+        R.color.lightsBlue
+    )
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -28,7 +39,7 @@ class notesListCustomAdapter(noteList:List<NoteDataModel>): RecyclerView.Adapter
     class ViewHolder(viewBind: NotesThumbnailBinding):RecyclerView.ViewHolder(viewBind.root) {
         val binding=viewBind
         fun clickPosition(position: Int,listener: OnItemClickListener?){
-            binding.noteRoot.setOnClickListener {
+            binding.container.setOnClickListener {
                 listener?.onItemClick(position)
             }
         }
@@ -44,16 +55,21 @@ class notesListCustomAdapter(noteList:List<NoteDataModel>): RecyclerView.Adapter
                 }
             }
         }
-      
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.headerText.text= noteLists[position].mainHeading
         holder.binding.secondTitle.text= noteLists[position].subHeading
+        val randomColor = colors[Random.nextInt(colors.size)]
+        setBackgroundColor(randomColor,holder.binding)
         holder.clickPosition(position,listener)
         holder.onDelete(position,listener)
     }
     override fun getItemCount(): Int {
         return noteLists.size
+    }
+    fun setBackgroundColor(colorResId: Int,binding: NotesThumbnailBinding) {
+        val background = binding.container.background as GradientDrawable
+        background.setColor(ContextCompat.getColor(fContext, colorResId))
     }
 }

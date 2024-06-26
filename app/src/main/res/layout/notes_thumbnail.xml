@@ -6,16 +6,17 @@
     android:layout_marginEnd="20dp"
     android:layout_marginTop="20dp"
     android:background="@drawable/note_list_radius"
-    android:id="@+id/noteRoot"
+    android:id="@+id/container"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 <androidx.appcompat.widget.Toolbar
-    android:layout_marginTop="5dp"
+    android:layout_marginTop="4dp"
     android:id="@+id/thumbnail_toolbar"
     android:layout_width="wrap_content"
     android:layout_height="20dp"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintBottom_toTopOf="@id/header_text"
     />
     <TextView
         app:layout_constraintTop_toBottomOf="@id/thumbnail_toolbar"
@@ -26,6 +27,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:textSize="25sp"
         android:textStyle="bold"
+        android:text="kdls;ds"
         android:id="@+id/header_text"
         android:gravity="start|center"
         android:layout_marginStart="20dp"
@@ -39,9 +41,10 @@
         android:text="fjkdkfdj"
         android:id="@+id/secondTitle"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="3dp"
+        android:layout_marginTop="12dp"
         android:gravity="start|center"
         android:textSize="20sp"
         android:layout_marginStart="20dp"
+        android:layout_marginBottom="10dp"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,8 @@
 package com.example.todolist.view.Activity
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.SearchView
 import android.widget.TextView
@@ -30,6 +32,9 @@ import kotlinx.coroutines.launch
 class HomePageActivity : AppCompatActivity() {
     private lateinit var straightLineView: StraightLineView
     private lateinit var homePageBinding: ActivityHomePageBinding
+    private val handler = Handler(Looper.getMainLooper())
+    private var searchRunnable: Runnable? = null
+
     private val mainViewModel: MainViewModel by viewModels {
         MainModelViewFactory(UserRepository(NoteListDatabase.getDatabase(this).noteDao()))
     }
@@ -82,32 +87,38 @@ class HomePageActivity : AppCompatActivity() {
             androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 // Handle the submitted query here, e.g., perform a search
-                CoroutineScope(Dispatchers.IO).launch {
                     query?.let {
                         currentFragmentSearch(it)
                     }
-                }
+
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 // This is optional, handle query text changes if needed
-                CoroutineScope(Dispatchers.IO).launch {
+                searchRunnable?.let { handler.removeCallbacks(it) }
+                searchRunnable= Runnable {
                     newText?.let {
                         currentFragmentSearch(it)
                     }
                 }
+                handler.postDelayed(searchRunnable!!,300)
                 return true
             }
         })
+        homePageBinding.searchView.setOnCloseListener {
+            currentFragmentSearch("")
+            false
+        }
         homePageBinding.tabLayout.getTabAt(0)?.select()
 
     }
-    private suspend fun currentFragmentSearch(query: String) {
+    private fun currentFragmentSearch(query: String) {
         val fragment = supportFragmentManager.findFragmentByTag("f${homePageBinding.viewPager.currentItem}")
         if (fragment is SearchFragment) {
             runOnUiThread {
             fragment.searchList(query)
+                fragment.isCompleteSearch(true)
             }
         }
     }

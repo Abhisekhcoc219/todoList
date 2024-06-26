@@ -16,7 +16,7 @@ interface NotesDao {
     @Query("SELECT * FROM notes WHERE pinned=1")
     fun getPinnedNotes():LiveData<List<NoteDataModel>>
 
-    @Query("SELECT * FROM notes WHERE Headings LIKE '%' || :searchQuery || '%' OR  SubHeadings LIKE '%' || :searchQuery|| '%' ")
+    @Query("SELECT * FROM notes WHERE Headings LIKE '%' || :searchQuery || '%' OR SubHeadings LIKE '%' || :searchQuery || '%'")
     fun searchNotes(searchQuery: String?): Flow<List<NoteDataModel>>
 
     @Query("SELECT id FROM notes WHERE Headings = :text")

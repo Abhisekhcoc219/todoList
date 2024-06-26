@@ -1,5 +1,6 @@
 package com.example.todolist.view.fragment
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -31,6 +32,7 @@ class AllListFragment: Fragment(),OnItemClickListener,SearchFragment {
         super.onAttach(context)
         factory= MainModelViewFactory(UserRepository(NoteListDatabase.getDatabase(context).noteDao()))
     }
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,12 +42,15 @@ class AllListFragment: Fragment(),OnItemClickListener,SearchFragment {
         val viewModelProvider = ViewModelProvider(viewModelStore, factory)
         viewModel= viewModelProvider[MainViewModel::class.java]
         _binding.recyclerView.layoutManager=LinearLayoutManager(requireContext())
-        viewModel.allNotes().observe(viewLifecycleOwner, Observer {
-            val customAdapter:notesListCustomAdapter=notesListCustomAdapter(it)
-            customAdapter.setOnItemListener(this)
-            _binding.recyclerView.adapter
-            _binding.recyclerView.adapter=customAdapter
-        })
+        if(!viewModel.search.value!!){
+            viewModel.allNotes().observe(viewLifecycleOwner, Observer {
+                Log.e("DEBUGSS","hello")
+                val customAdapter:notesListCustomAdapter=notesListCustomAdapter(requireContext(),it)
+                customAdapter.setOnItemListener(this)
+                _binding.recyclerView.adapter=customAdapter
+                customAdapter.notifyDataSetChanged()
+            })
+        }
         _binding.addButton.setOnClickListener {
             startActivity(Intent(getActivity(), NotesActivity::class.java))
         }
@@ -55,43 +60,103 @@ class AllListFragment: Fragment(),OnItemClickListener,SearchFragment {
         return _binding.root
     }
 
-    override fun onStop() {
-        super.onStop()
-//        Toast.makeText(context, "s yes", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-//        Toast.makeText(context, "d yes", Toast.LENGTH_SHORT).show()
-    }
-
     override fun onItemClick(position: Int) {
-        val listData=viewModel.allNotes().value?.get(position)
-        if (listData != null) {
-            val intent:Intent=Intent(requireContext(),NotesActivity::class.java)
-            intent.putExtra("pos",position)
-            intent.putExtra("first",true)
-            intent.putExtra("listId",listData.id)
-            intent.putExtra("overWrite",true)
-            startActivity(intent)
+        if(viewModel.search.value!!){
+            val searchData=viewModel.searchResults.value?.get(position)
+            Log.e("DEBUGSS","$searchData")
+            if (searchData != null) {
+                val intent:Intent=Intent(requireContext(),NotesActivity::class.java)
+                intent.putExtra("position",position)
+                intent.putExtra("first",true)
+                intent.putExtra("searchId",searchData.id)
+                intent.putExtra("mainHeading",searchData.mainHeading)
+                intent.putExtra("subHeading",searchData.subHeading)
+                intent.putExtra("isPinned",searchData.isPinned)
+                intent.putExtra("overWrite",true)
+                intent.putExtra("isSearch",true)
+                startActivity(intent)
+            }
         }
+        else{
+            val listData=viewModel.allNotes().value?.get(position)
+            if (listData != null) {
+                Log.e("DEBUGSS","allnotes")
+                val intent:Intent=Intent(requireContext(),NotesActivity::class.java)
+                intent.putExtra("pos",position)
+                intent.putExtra("first",true)
+                intent.putExtra("listId",listData.id)
+                intent.putExtra("overWrite",true)
+                startActivity(intent)
+            }
+        }
+        viewModel.setValueInSearch(false)
     }
 
     override fun onItemDelete(position: Int) {
         Log.e("TAGS","entery delete")
-     val listNotes= viewModel.allNotes().value?.get(position)
-      viewModel.delete(NoteDataModel(listNotes!!.id,listNotes!!.mainHeading, listNotes!!.subHeading,listNotes!!.isPinned))
+        if(viewModel.search.value!!)
+        {
+            Log.e("DEBUGSS","delete operation")
+
+            if(position>=0) {
+                val searchNotes = viewModel.searchResults.value?.get(position)
+                viewModel.delete(
+                    NoteDataModel(
+                        searchNotes!!.id,
+                        searchNotes!!.mainHeading,
+                        searchNotes!!.subHeading,
+                        searchNotes!!.isPinned
+                    )
+                )
+            }
+        }
+        else
+        {
+            val listNotes= viewModel.allNotes().value?.get(position)
+            viewModel.delete(NoteDataModel(listNotes!!.id,listNotes!!.mainHeading, listNotes!!.subHeading,listNotes!!.isPinned))
+        }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun searchList(query: String) {
      Log.e("TAGS","es $query")
         viewModel.searchResults.observe(viewLifecycleOwner, Observer {
-            val customAdapter:notesListCustomAdapter=notesListCustomAdapter(it)
+            val customAdapter:notesListCustomAdapter=notesListCustomAdapter(requireContext(),it)
             customAdapter.setOnItemListener(this)
-            _binding.recyclerView.adapter
             _binding.recyclerView.adapter=customAdapter
-            Log.e("TAGS",it.toString())
+            customAdapter.notifyDataSetChanged()
         })
         viewModel.searchNotes(query)
+    }
+    override fun isCompleteSearch(isSearching: Boolean) {
+        viewModel.setValueInSearch(isSearching)
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        Log.e("DEBUGSS","onStart")
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.e("DEBUGSS","onDestroyView")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.e("DEBUGSS","onPause")
+    }
+    override fun onStop() {
+        super.onStop()
+        Log.e("DEBUGSS","onStop")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.e("DEBUGSS","onResume")
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.e("DEBUGSS","onDestroy")
     }
 }

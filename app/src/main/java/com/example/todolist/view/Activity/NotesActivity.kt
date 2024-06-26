@@ -46,33 +46,52 @@ class NotesActivity : AppCompatActivity() {
         mainViewModel.isFirst=intent.getBooleanExtra("overWrite",false)
         if(mainViewModel.isFirst){
             val positions:Int=intent.getIntExtra("pos",0)
-            if(intent.getBooleanExtra("first",false)){
-            mainViewModel.allNotes().observe(this, Observer {
-                if(it.isNotEmpty()){
-                binding.mainTitle.text= it[positions].mainHeading?.toEditable()
-                binding.titleNotes.text=it[positions].subHeading?.toEditable()
-                Log.d("TAGS","YES ${it[positions].id} "+positions)
-                isCheckPinnedForFirstFragment()}
-            })}
+            Log.e("DEBUGSS",""+intent.getBooleanExtra("isSearch",false))
+            if(intent.getBooleanExtra("isSearch",false)){
+                binding.mainTitle.text=intent.getStringExtra("mainHeading")?.toEditable()
+                binding.titleNotes.text=intent.getStringExtra("subHeading")?.toEditable()
+                isCheckPinnedForSearchFirstFragment()
+            }
             else{
-                mainViewModel.getPinNotes().observe(this, Observer {
-                    if(it.isNotEmpty()){
-                    binding.mainTitle.text= it[positions].mainHeading?.toEditable()
-                    binding.titleNotes.text=it[positions].subHeading?.toEditable()
-                    isCheckPinnedForSecondFragment()}
-                })
+                if(intent.getBooleanExtra("first",false)){
+                    mainViewModel.allNotes().observe(this, Observer {
+                        if(it.isNotEmpty()){
+                            binding.mainTitle.text= it[positions].mainHeading?.toEditable()
+                            binding.titleNotes.text=it[positions].subHeading?.toEditable()
+                            Log.d("TAGS","YES ${it[positions].id} "+positions)
+                            isCheckPinnedForFirstFragment()
+                        }
+                    })}
+                else{
+                    mainViewModel.getPinNotes().observe(this, Observer {
+                        if(it.isNotEmpty()){
+                            binding.mainTitle.text= it[positions].mainHeading?.toEditable()
+                            binding.titleNotes.text=it[positions].subHeading?.toEditable()
+                            isCheckPinnedForSecondFragment()
+                        }
+                    })
+                }
             }
         }
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.backButton.setOnClickListener {
             finish()
         }
-
         binding.pinButton.setOnClickListener {
             addToPinned()
         }
     }
-    fun isCheckPinnedForFirstFragment(){
+    private fun isCheckPinnedForSearchFirstFragment(){
+        if(intent.getBooleanExtra("isPinned",false))
+        {
+            binding.pinButton.text=getString(R.string.unpinned)
+        }
+        else
+        {
+            binding.pinButton.text=getString(R.string.pinned)
+        }
+    }
+    private fun isCheckPinnedForFirstFragment(){
         val pos=intent.getIntExtra("pos",0)
         val list=mainViewModel.allNotes().value?.get(pos)
 //        Log.e("TAGS",list.toString())
@@ -85,10 +104,11 @@ class NotesActivity : AppCompatActivity() {
     }
 
 
-    fun isCheckPinnedForSecondFragment(){
+    private fun isCheckPinnedForSecondFragment(){
         val pos=intent.getIntExtra("pos",0)
         val list=mainViewModel.getPinNotes().value?.get(pos)
-//        Log.e("TAGS",list.toString())
+//      Log.e("TAGS",list.toString())
+
         if(list?.isPinned!!){
             binding.pinButton.text=getString(R.string.unpinned)
         }
@@ -96,7 +116,7 @@ class NotesActivity : AppCompatActivity() {
             binding.pinButton.text=getString(R.string.pinned)
         }
     }
-    fun addToPinned(){
+    private fun addToPinned(){
         val pos=intent.getIntExtra("pos",0)
         val list=mainViewModel.allNotes().value?.get(pos)
         Log.e("TAGS",list.toString())
@@ -125,7 +145,12 @@ class NotesActivity : AppCompatActivity() {
         return when(item.itemId){
             R.id.delete -> {
                 val id=intent.getIntExtra("listId",0)
+                if(intent.getBooleanExtra("isSearch",false)){
+                    mainViewModel.delete(NoteDataModel(intent.getIntExtra("searchId",0),binding.mainTitle.text.toString(),binding.titleNotes.text.toString(),mainViewModel.isPinned))
+                }
+                else{
                 mainViewModel.delete(NoteDataModel(id,binding.mainTitle.text.toString(),binding.titleNotes.text.toString(),mainViewModel.isPinned))
+                }
                 finish()
                 true
             }
@@ -138,15 +163,19 @@ class NotesActivity : AppCompatActivity() {
         val NoteTitle=binding.titleNotes.getText().toString()
         if(!mainViewModel.isFirst){
             if(Title.isNotEmpty() || NoteTitle.isNotEmpty()){
-                mainViewModel.insert(NoteDataModel(Title,NoteTitle,mainViewModel.isPinned))
+                if(Title.isEmpty() && NoteTitle.isEmpty()){
+                    Toast.makeText(this, "note is empty please add notes", Toast.LENGTH_SHORT).show()
+                }
+                else{
+                mainViewModel.insert(NoteDataModel(Title,NoteTitle,mainViewModel.isPinned))}
             }
             else{
 //                Toast.makeText(this, "not created", Toast.LENGTH_SHORT).show()
             }
         }
         else{
-            val firstText:String? = binding.mainTitle.text.toString()
-            val secondText:String? = binding.titleNotes.text.toString()
+            val firstText: String = binding.mainTitle.text.toString()
+            val secondText: String = binding.titleNotes.text.toString()
             val pos=intent.getIntExtra("listId",0)
             if(!intent.getBooleanExtra("first",true)){
                 mainViewModel.isPinned=true
@@ -157,9 +186,18 @@ class NotesActivity : AppCompatActivity() {
             else if(getString(R.string.unpinned)===binding.pinButton.text){
                 mainViewModel.isPinned=true
             }
-            mainViewModel.update(NoteDataModel(pos,firstText, secondText,mainViewModel.isPinned))
+            if(firstText.isEmpty() && NoteTitle.isEmpty()){
+                Toast.makeText(this, "note is empty please add notes", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                if(intent.getBooleanExtra("isSearch",false)){
+                   mainViewModel.update(NoteDataModel(intent.getIntExtra("searchId",0),firstText, secondText,mainViewModel.isPinned))
+                }
+                else{
+                mainViewModel.update(NoteDataModel(pos,firstText, secondText,mainViewModel.isPinned))
+                }
+            }
         }
-
     }
     fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
 }
