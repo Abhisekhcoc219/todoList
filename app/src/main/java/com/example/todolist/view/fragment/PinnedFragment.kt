@@ -49,11 +49,14 @@ class PinnedFragment: Fragment(),OnItemClickListener,SearchFragment {
         val viewModelStore= ViewModelStore()
         viewModel=ViewModelProvider(viewModelStore,factory).get(MainViewModel::class.java)
         binding.pinnedRecycler.layoutManager=LinearLayoutManager(requireContext())
-        viewModel.getPinNotes().observe(viewLifecycleOwner, Observer {
-            val NoteListCustomAdapter=notesListCustomAdapter(requireContext(),it)
-            NoteListCustomAdapter.setOnItemListener(this)
-            binding.pinnedRecycler.adapter=NoteListCustomAdapter
-        })
+        if(!viewModel.search.value!!) {
+            viewModel.getPinNotes().observe(viewLifecycleOwner, Observer {
+                val NoteListCustomAdapter = notesListCustomAdapter(requireContext(), it)
+                NoteListCustomAdapter.setOnItemListener(this)
+                binding.pinnedRecycler.adapter = NoteListCustomAdapter
+                NoteListCustomAdapter.notifyDataSetChanged()
+            })
+        }
         viewModel.WhichFragment=true
         binding.addButton.setOnClickListener {
             startActivity(Intent(getActivity(), NotesActivity::class.java))
@@ -62,20 +65,57 @@ class PinnedFragment: Fragment(),OnItemClickListener,SearchFragment {
     }
 
     override fun onItemClick(position: Int) {
-        val listData=viewModel.getPinNotes().value?.get(position)
-        if (listData != null) {
-            val intent:Intent=Intent(requireContext(),NotesActivity::class.java)
-            intent.putExtra("pos",position)
-            intent.putExtra("first",false)
-            intent.putExtra("listId",listData.id)
-            intent.putExtra("overWrite",true)
-            startActivity(intent)
+        if(viewModel.search.value!!){
+            val searchData=viewModel.searchResults.value?.get(position)
+            Log.e("DEBUGSS","$searchData")
+            if (searchData != null) {
+                val intent:Intent=Intent(requireContext(),NotesActivity::class.java)
+                intent.putExtra("position",position)
+                intent.putExtra("first",true)
+                intent.putExtra("searchIdPinnedFragment",searchData.id)
+                intent.putExtra("mainHeadingPinnedFragment",searchData.mainHeading)
+                intent.putExtra("subHeadingPinnedFragment",searchData.subHeading)
+                intent.putExtra("isPinnedFragment",searchData.isPinned)
+                intent.putExtra("overWrite",true)
+                intent.putExtra("isSearchPinnedFragment",true)
+                startActivity(intent)
+            }
         }
+        else{
+            val listData=viewModel.getPinNotes().value?.get(position)
+            if (listData != null) {
+                val intent:Intent=Intent(requireContext(),NotesActivity::class.java)
+                intent.putExtra("pos",position)
+                intent.putExtra("first",false)
+                intent.putExtra("listId",listData.id)
+                intent.putExtra("overWrite",true)
+                startActivity(intent)
+            }
+        }
+        viewModel.setValueInSearch(false)
     }
 
     override fun onItemDelete(position: Int) {
+        if(viewModel.search.value!!)
+        {
+            Log.e("DEBUGSS","delete operation")
+
+            if(position>=0) {
+                val searchNotes = viewModel.searchResults.value?.get(position)
+                viewModel.delete(
+                    NoteDataModel(
+                        searchNotes!!.id,
+                        searchNotes!!.mainHeading,
+                        searchNotes!!.subHeading,
+                        searchNotes!!.isPinned
+                    )
+                )
+            }
+        }
+        else{
         val listNotes= viewModel.getPinNotes().value?.get(position)
         viewModel.delete(NoteDataModel(listNotes!!.id,listNotes!!.mainHeading, listNotes!!.subHeading,listNotes!!.isPinned))
+        }
     }
 
     override fun searchList(query: String) {
@@ -83,6 +123,7 @@ class PinnedFragment: Fragment(),OnItemClickListener,SearchFragment {
             val NoteListCustomAdapter=notesListCustomAdapter(requireContext(),it)
             NoteListCustomAdapter.setOnItemListener(this)
             binding.pinnedRecycler.adapter=NoteListCustomAdapter
+            NoteListCustomAdapter.notifyDataSetChanged()
             Log.e("TAGS",it.toString())
         })
         viewModel.searchNotes(query)
@@ -90,5 +131,6 @@ class PinnedFragment: Fragment(),OnItemClickListener,SearchFragment {
     }
 
     override fun isCompleteSearch(isSearching: Boolean) {
+        viewModel.setValueInSearch(isSearching)
     }
 }

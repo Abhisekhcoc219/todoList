@@ -131,32 +131,4 @@ class AllListFragment: Fragment(),OnItemClickListener,SearchFragment {
     override fun isCompleteSearch(isSearching: Boolean) {
         viewModel.setValueInSearch(isSearching)
     }
-
-
-    override fun onStart() {
-        super.onStart()
-        Log.e("DEBUGSS","onStart")
-    }
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.e("DEBUGSS","onDestroyView")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.e("DEBUGSS","onPause")
-    }
-    override fun onStop() {
-        super.onStop()
-        Log.e("DEBUGSS","onStop")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.e("DEBUGSS","onResume")
-    }
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.e("DEBUGSS","onDestroy")
-    }
 }

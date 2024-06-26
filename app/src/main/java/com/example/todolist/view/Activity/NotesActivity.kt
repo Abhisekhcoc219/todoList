@@ -52,6 +52,11 @@ class NotesActivity : AppCompatActivity() {
                 binding.titleNotes.text=intent.getStringExtra("subHeading")?.toEditable()
                 isCheckPinnedForSearchFirstFragment()
             }
+            else if(intent.getBooleanExtra("isSearchPinnedFragment",false)){
+                binding.mainTitle.text=intent.getStringExtra("mainHeadingPinnedFragment")?.toEditable()
+                binding.titleNotes.text=intent.getStringExtra("subHeadingPinnedFragment")?.toEditable()
+                isCheckPinnedForSearchSecondFragment()
+            }
             else{
                 if(intent.getBooleanExtra("first",false)){
                     mainViewModel.allNotes().observe(this, Observer {
@@ -79,6 +84,17 @@ class NotesActivity : AppCompatActivity() {
         }
         binding.pinButton.setOnClickListener {
             addToPinned()
+        }
+    }
+
+    private fun isCheckPinnedForSearchSecondFragment(){
+        if(intent.getBooleanExtra("isPinnedFragment",false))
+        {
+            binding.pinButton.text=getString(R.string.unpinned)
+        }
+        else
+        {
+            binding.pinButton.text=getString(R.string.pinned)
         }
     }
     private fun isCheckPinnedForSearchFirstFragment(){
@@ -148,6 +164,9 @@ class NotesActivity : AppCompatActivity() {
                 if(intent.getBooleanExtra("isSearch",false)){
                     mainViewModel.delete(NoteDataModel(intent.getIntExtra("searchId",0),binding.mainTitle.text.toString(),binding.titleNotes.text.toString(),mainViewModel.isPinned))
                 }
+                else if(intent.getBooleanExtra("isSearchPinnedFragment",false)){
+                    mainViewModel.delete(NoteDataModel(intent.getIntExtra("searchIdPinnedFragment",0),binding.mainTitle.text.toString(),binding.titleNotes.text.toString(),mainViewModel.isPinned))
+                }
                 else{
                 mainViewModel.delete(NoteDataModel(id,binding.mainTitle.text.toString(),binding.titleNotes.text.toString(),mainViewModel.isPinned))
                 }
@@ -192,6 +211,9 @@ class NotesActivity : AppCompatActivity() {
             else{
                 if(intent.getBooleanExtra("isSearch",false)){
                    mainViewModel.update(NoteDataModel(intent.getIntExtra("searchId",0),firstText, secondText,mainViewModel.isPinned))
+                }
+                else if (intent.getBooleanExtra("isSearchPinnedFragment",false)){
+                    mainViewModel.update(NoteDataModel(intent.getIntExtra("searchIdPinnedFragment",0),firstText, secondText,mainViewModel.isPinned))
                 }
                 else{
                 mainViewModel.update(NoteDataModel(pos,firstText, secondText,mainViewModel.isPinned))
