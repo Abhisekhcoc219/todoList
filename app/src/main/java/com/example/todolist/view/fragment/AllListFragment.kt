@@ -13,7 +13,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.todolist.Adapter.OnItemClickListener
 import com.example.todolist.Adapter.SearchFragment
 import com.example.todolist.Adapter.notesListCustomAdapter
@@ -41,7 +43,7 @@ class AllListFragment: Fragment(),OnItemClickListener,SearchFragment {
         val viewModelStore = ViewModelStore()
         val viewModelProvider = ViewModelProvider(viewModelStore, factory)
         viewModel= viewModelProvider[MainViewModel::class.java]
-        _binding.recyclerView.layoutManager=LinearLayoutManager(requireContext())
+        _binding.recyclerView.layoutManager=GridLayoutManager(requireContext(),2)
         if(!viewModel.search.value!!){
             viewModel.allNotes().observe(viewLifecycleOwner, Observer {
                 Log.e("DEBUGSS","hello")
@@ -62,19 +64,23 @@ class AllListFragment: Fragment(),OnItemClickListener,SearchFragment {
 
     override fun onItemClick(position: Int) {
         if(viewModel.search.value!!){
-            val searchData=viewModel.searchResults.value?.get(position)
-            Log.e("DEBUGSS","$searchData")
-            if (searchData != null) {
-                val intent:Intent=Intent(requireContext(),NotesActivity::class.java)
-                intent.putExtra("position",position)
-                intent.putExtra("first",true)
-                intent.putExtra("searchId",searchData.id)
-                intent.putExtra("mainHeading",searchData.mainHeading)
-                intent.putExtra("subHeading",searchData.subHeading)
-                intent.putExtra("isPinned",searchData.isPinned)
-                intent.putExtra("overWrite",true)
-                intent.putExtra("isSearch",true)
-                startActivity(intent)
+            val size: Int? =viewModel.searchResults.value?.size
+            if(position<size!!) {
+                val searchData = viewModel.searchResults.value?.get(position)
+                Log.e("DEBUGSS", "$searchData")
+                if (searchData != null) {
+                    val intent: Intent = Intent(requireContext(), NotesActivity::class.java)
+                    intent.putExtra("position", position)
+                    intent.putExtra("first", true)
+                    intent.putExtra("searchId", searchData.id)
+                    intent.putExtra("mainHeading", searchData.mainHeading)
+                    intent.putExtra("subHeading", searchData.subHeading)
+                    intent.putExtra("isPinned", searchData.isPinned)
+                    intent.putExtra("overWrite", true)
+                    intent.putExtra("backgroundColorFragment1", searchData.backgroundColor)
+                    intent.putExtra("isSearch", true)
+                    startActivity(intent)
+                }
             }
         }
         else{
@@ -86,6 +92,7 @@ class AllListFragment: Fragment(),OnItemClickListener,SearchFragment {
                 intent.putExtra("first",true)
                 intent.putExtra("listId",listData.id)
                 intent.putExtra("overWrite",true)
+                intent.putExtra("color",listData.backgroundColor)
                 startActivity(intent)
             }
         }
@@ -99,21 +106,25 @@ class AllListFragment: Fragment(),OnItemClickListener,SearchFragment {
             Log.e("DEBUGSS","delete operation")
 
             if(position>=0) {
-                val searchNotes = viewModel.searchResults.value?.get(position)
-                viewModel.delete(
-                    NoteDataModel(
-                        searchNotes!!.id,
-                        searchNotes!!.mainHeading,
-                        searchNotes!!.subHeading,
-                        searchNotes!!.isPinned
+                val size: Int? =viewModel.searchResults.value?.size
+                if(position<size!!) {
+                    val searchNotes = viewModel.searchResults.value?.get(position)
+                    viewModel.delete(
+                        NoteDataModel(
+                            searchNotes!!.id,
+                            searchNotes!!.mainHeading,
+                            searchNotes!!.subHeading,
+                            searchNotes!!.isPinned,
+                            searchNotes!!.backgroundColor
+                        )
                     )
-                )
+                }
             }
         }
         else
         {
             val listNotes= viewModel.allNotes().value?.get(position)
-            viewModel.delete(NoteDataModel(listNotes!!.id,listNotes!!.mainHeading, listNotes!!.subHeading,listNotes!!.isPinned))
+            viewModel.delete(NoteDataModel(listNotes!!.id,listNotes!!.mainHeading, listNotes!!.subHeading,listNotes!!.isPinned,listNotes!!.backgroundColor))
         }
     }
 

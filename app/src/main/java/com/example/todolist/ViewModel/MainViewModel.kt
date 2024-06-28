@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.todolist.R
 import com.example.todolist.model.NoteDataModel
 import com.example.todolist.UserRepositorys.UserRepository
 import kotlinx.coroutines.CoroutineScope
@@ -48,5 +49,17 @@ class MainViewModel(private val userRepository: UserRepository): ViewModel(){
     }
     fun searchNotes(query:String?){
     _searchResults.value= query!!
+    }
+
+    fun getRandomColor():Int{
+        val colors = listOf(
+            R.color.lightYellow,
+            R.color.lightRed,
+            R.color.lightBlue,
+            R.color.lightGreen,
+            R.color.lightPurple,
+            R.color.lightsBlue
+        )
+        return colors.random()
     }
 }

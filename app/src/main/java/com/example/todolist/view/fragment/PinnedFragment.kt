@@ -12,7 +12,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.todolist.Adapter.OnItemClickListener
 import com.example.todolist.Adapter.SearchFragment
 import com.example.todolist.Adapter.notesListCustomAdapter
@@ -24,11 +26,6 @@ import com.example.todolist.dbUtil.NoteListDatabase
 import com.example.todolist.model.NoteDataModel
 import com.example.todolist.view.Activity.NotesActivity
 
-/**
- * A simple [Fragment] subclass.
- * Use the [PinnedFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class PinnedFragment: Fragment(),OnItemClickListener,SearchFragment {
     private lateinit var binding: FragmentPinnedBinding
     // TODO: Rename and change types of parameters
@@ -48,7 +45,7 @@ class PinnedFragment: Fragment(),OnItemClickListener,SearchFragment {
         // Inflate the layout for this fragment
         val viewModelStore= ViewModelStore()
         viewModel=ViewModelProvider(viewModelStore,factory).get(MainViewModel::class.java)
-        binding.pinnedRecycler.layoutManager=LinearLayoutManager(requireContext())
+        binding.pinnedRecycler.layoutManager=GridLayoutManager(requireContext(),2)
         if(!viewModel.search.value!!) {
             viewModel.getPinNotes().observe(viewLifecycleOwner, Observer {
                 val NoteListCustomAdapter = notesListCustomAdapter(requireContext(), it)
@@ -66,19 +63,23 @@ class PinnedFragment: Fragment(),OnItemClickListener,SearchFragment {
 
     override fun onItemClick(position: Int) {
         if(viewModel.search.value!!){
-            val searchData=viewModel.searchResults.value?.get(position)
-            Log.e("DEBUGSS","$searchData")
-            if (searchData != null) {
-                val intent:Intent=Intent(requireContext(),NotesActivity::class.java)
-                intent.putExtra("position",position)
-                intent.putExtra("first",true)
-                intent.putExtra("searchIdPinnedFragment",searchData.id)
-                intent.putExtra("mainHeadingPinnedFragment",searchData.mainHeading)
-                intent.putExtra("subHeadingPinnedFragment",searchData.subHeading)
-                intent.putExtra("isPinnedFragment",searchData.isPinned)
-                intent.putExtra("overWrite",true)
-                intent.putExtra("isSearchPinnedFragment",true)
-                startActivity(intent)
+            val size: Int? =viewModel.searchResults.value?.size
+            if(position<size!!) {
+                val searchData = viewModel.searchResults.value?.get(position)
+                Log.e("DEBUGSS", "$searchData")
+                if (searchData != null) {
+                    val intent: Intent = Intent(requireContext(), NotesActivity::class.java)
+                    intent.putExtra("position", position)
+                    intent.putExtra("first", true)
+                    intent.putExtra("searchIdPinnedFragment", searchData.id)
+                    intent.putExtra("mainHeadingPinnedFragment", searchData.mainHeading)
+                    intent.putExtra("subHeadingPinnedFragment", searchData.subHeading)
+                    intent.putExtra("isPinnedFragment", searchData.isPinned)
+                    intent.putExtra("overWrite", true)
+                    intent.putExtra("backgroundColorFragment2", searchData.backgroundColor)
+                    intent.putExtra("isSearchPinnedFragment", true)
+                    startActivity(intent)
+                }
             }
         }
         else{
@@ -89,6 +90,7 @@ class PinnedFragment: Fragment(),OnItemClickListener,SearchFragment {
                 intent.putExtra("first",false)
                 intent.putExtra("listId",listData.id)
                 intent.putExtra("overWrite",true)
+                intent.putExtra("color",listData.backgroundColor)
                 startActivity(intent)
             }
         }
@@ -101,20 +103,24 @@ class PinnedFragment: Fragment(),OnItemClickListener,SearchFragment {
             Log.e("DEBUGSS","delete operation")
 
             if(position>=0) {
-                val searchNotes = viewModel.searchResults.value?.get(position)
-                viewModel.delete(
-                    NoteDataModel(
-                        searchNotes!!.id,
-                        searchNotes!!.mainHeading,
-                        searchNotes!!.subHeading,
-                        searchNotes!!.isPinned
+                val size: Int? =viewModel.searchResults.value?.size
+                if(position<size!!) {
+                    val searchNotes = viewModel.searchResults.value?.get(position)
+                    viewModel.delete(
+                        NoteDataModel(
+                            searchNotes!!.id,
+                            searchNotes!!.mainHeading,
+                            searchNotes!!.subHeading,
+                            searchNotes!!.isPinned,
+                            searchNotes!!.backgroundColor
+                        )
                     )
-                )
+                }
             }
         }
         else{
         val listNotes= viewModel.getPinNotes().value?.get(position)
-        viewModel.delete(NoteDataModel(listNotes!!.id,listNotes!!.mainHeading, listNotes!!.subHeading,listNotes!!.isPinned))
+        viewModel.delete(NoteDataModel(listNotes!!.id,listNotes!!.mainHeading, listNotes!!.subHeading,listNotes!!.isPinned,listNotes!!.backgroundColor))
         }
     }
 

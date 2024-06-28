@@ -9,8 +9,9 @@ data class NoteDataModel(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "Headings")val mainHeading:String?,
     @ColumnInfo(name = "SubHeadings")val subHeading:String?,
-    @ColumnInfo(name = "pinned") val isPinned:Boolean
+    @ColumnInfo(name = "pinned") val isPinned:Boolean,
+    @ColumnInfo(name = "backgroundColor") val backgroundColor:Int
 )
 {
-    constructor(title:String?,noteTitle:String?,isPinned: Boolean) :this(0,title,noteTitle,isPinned)
+    constructor(title:String?,noteTitle:String?,isPinned: Boolean,backgroundColor: Int) :this(0,title,noteTitle,isPinned,backgroundColor)
 }

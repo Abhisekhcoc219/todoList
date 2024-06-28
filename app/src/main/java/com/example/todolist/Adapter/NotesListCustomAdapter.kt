@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import com.example.todolist.R
 import com.example.todolist.databinding.NotesThumbnailBinding
 import com.example.todolist.model.NoteDataModel
@@ -17,14 +18,6 @@ class notesListCustomAdapter(context:Context,noteList:List<NoteDataModel>): Recy
     private val noteLists: List<NoteDataModel> = noteList
     private var listener:OnItemClickListener?=null
     private val fContext=context
-    private val colors = listOf(
-        R.color.lightYellow,
-        R.color.lightRed,
-        R.color.lightBlue,
-        R.color.lightGreen,
-        R.color.lightPurple,
-        R.color.lightsBlue
-    )
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -40,7 +33,8 @@ class notesListCustomAdapter(context:Context,noteList:List<NoteDataModel>): Recy
         val binding=viewBind
         fun clickPosition(position: Int,listener: OnItemClickListener?){
             binding.container.setOnClickListener {
-                listener?.onItemClick(position)
+                if(position!= NO_POSITION){
+                listener?.onItemClick(position)}
             }
         }
         fun onDelete(position: Int,listener: OnItemClickListener?){
@@ -60,7 +54,7 @@ class notesListCustomAdapter(context:Context,noteList:List<NoteDataModel>): Recy
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.headerText.text= noteLists[position].mainHeading
         holder.binding.secondTitle.text= noteLists[position].subHeading
-        val randomColor = colors[Random.nextInt(colors.size)]
+        val randomColor = noteLists[position].backgroundColor
         setBackgroundColor(randomColor,holder.binding)
         holder.clickPosition(position,listener)
         holder.onDelete(position,listener)

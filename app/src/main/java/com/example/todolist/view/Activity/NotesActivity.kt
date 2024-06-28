@@ -162,13 +162,13 @@ class NotesActivity : AppCompatActivity() {
             R.id.delete -> {
                 val id=intent.getIntExtra("listId",0)
                 if(intent.getBooleanExtra("isSearch",false)){
-                    mainViewModel.delete(NoteDataModel(intent.getIntExtra("searchId",0),binding.mainTitle.text.toString(),binding.titleNotes.text.toString(),mainViewModel.isPinned))
+                    mainViewModel.delete(NoteDataModel(intent.getIntExtra("searchId",0),binding.mainTitle.text.toString(),binding.titleNotes.text.toString(),mainViewModel.isPinned,intent.getIntExtra("backgroundColorFragment1",R.color.lightGreen)))
                 }
                 else if(intent.getBooleanExtra("isSearchPinnedFragment",false)){
-                    mainViewModel.delete(NoteDataModel(intent.getIntExtra("searchIdPinnedFragment",0),binding.mainTitle.text.toString(),binding.titleNotes.text.toString(),mainViewModel.isPinned))
+                    mainViewModel.delete(NoteDataModel(intent.getIntExtra("searchIdPinnedFragment",0),binding.mainTitle.text.toString(),binding.titleNotes.text.toString(),mainViewModel.isPinned,intent.getIntExtra("backgroundColorFragment2",R.color.lightGreen)))
                 }
                 else{
-                mainViewModel.delete(NoteDataModel(id,binding.mainTitle.text.toString(),binding.titleNotes.text.toString(),mainViewModel.isPinned))
+                mainViewModel.delete(NoteDataModel(id,binding.mainTitle.text.toString(),binding.titleNotes.text.toString(),mainViewModel.isPinned,intent.getIntExtra("color",R.color.lightGreen)))
                 }
                 finish()
                 true
@@ -186,7 +186,7 @@ class NotesActivity : AppCompatActivity() {
                     Toast.makeText(this, "note is empty please add notes", Toast.LENGTH_SHORT).show()
                 }
                 else{
-                mainViewModel.insert(NoteDataModel(Title,NoteTitle,mainViewModel.isPinned))}
+                mainViewModel.insert(NoteDataModel(Title,NoteTitle,mainViewModel.isPinned,mainViewModel.getRandomColor()))}
             }
             else{
 //                Toast.makeText(this, "not created", Toast.LENGTH_SHORT).show()
@@ -210,13 +210,13 @@ class NotesActivity : AppCompatActivity() {
             }
             else{
                 if(intent.getBooleanExtra("isSearch",false)){
-                   mainViewModel.update(NoteDataModel(intent.getIntExtra("searchId",0),firstText, secondText,mainViewModel.isPinned))
+                   mainViewModel.update(NoteDataModel(intent.getIntExtra("searchId",0),firstText, secondText,mainViewModel.isPinned,intent.getIntExtra("backgroundColorFragment1",R.color.lightGreen)))
                 }
                 else if (intent.getBooleanExtra("isSearchPinnedFragment",false)){
-                    mainViewModel.update(NoteDataModel(intent.getIntExtra("searchIdPinnedFragment",0),firstText, secondText,mainViewModel.isPinned))
+                    mainViewModel.update(NoteDataModel(intent.getIntExtra("searchIdPinnedFragment",0),firstText, secondText,mainViewModel.isPinned,intent.getIntExtra("backgroundColorFragment2",R.color.lightGreen)))
                 }
                 else{
-                mainViewModel.update(NoteDataModel(pos,firstText, secondText,mainViewModel.isPinned))
+                mainViewModel.update(NoteDataModel(pos,firstText, secondText,mainViewModel.isPinned,intent.getIntExtra("color",R.color.lightGreen)))
                 }
             }
         }
