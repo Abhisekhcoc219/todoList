@@ -153,13 +153,13 @@ class NotesActivity : AppCompatActivity() {
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
-        menuInflater.inflate(R.menu.more,menu)
+        menuInflater.inflate(R.menu.note_more,menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
-            R.id.delete -> {
+            R.id.deleteNotes -> {
                 val id=intent.getIntExtra("listId",0)
                 if(intent.getBooleanExtra("isSearch",false)){
                     mainViewModel.delete(NoteDataModel(intent.getIntExtra("searchId",0),binding.mainTitle.text.toString(),binding.titleNotes.text.toString(),mainViewModel.isPinned,intent.getIntExtra("backgroundColorFragment1",R.color.lightGreen)))
@@ -171,6 +171,10 @@ class NotesActivity : AppCompatActivity() {
                 mainViewModel.delete(NoteDataModel(id,binding.mainTitle.text.toString(),binding.titleNotes.text.toString(),mainViewModel.isPinned,intent.getIntExtra("color",R.color.lightGreen)))
                 }
                 finish()
+                true
+            }
+            R.id.shareNotes ->{
+                shareNote(binding.mainTitle.text.toString(),binding.titleNotes.text.toString())
                 true
             }
             else->super.onOptionsItemSelected(item)
@@ -222,4 +226,17 @@ class NotesActivity : AppCompatActivity() {
         }
     }
     fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
+
+    fun shareNote(head:String,body:String){
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, "$head \n$body")
+        }
+        val chooser = Intent.createChooser(intent, "Share via")
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(chooser)
+        } else {
+            Toast.makeText(this, "No application can handle this request. Please install a sharing app.", Toast.LENGTH_LONG).show()
+        }
+    }
 }
